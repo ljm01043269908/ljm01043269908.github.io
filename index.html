@@ -12,45 +12,50 @@
 </head>
 
 <body>
-    <section class="section">
-        <h1 class="title">머신러닝 서비스</h1>
-        <h2 class="subtitle">사진 분류 머신러닝 서비스</h2>
+    <header class="site-header wrap">
+        <div class="brand"><span class="brand-mark">✨</span> 머신러닝 서비스</div>
+    </header>
+
+    <section class="hero wrap">
+        <h1>AI <em>닮은꼴</em> 테스트</h1>
+        <p>사진 한 장으로 알아보는 인공지능 사진 분류</p>
+        <div class="badges">
+            <span class="badge">무료</span>
+            <span class="badge">개인정보 안전</span>
+            <span class="badge">빠른 분석</span>
+        </div>
     </section>
 
-    <div class="mt-3 container file-upload">
-        <div class="image-upload-wrap">
-            <input class="file-upload-input" type="file" onchange="readURL(this);" accept="image/">
-            <div class="drag-text">
-                <img src="./mltest_files/upload.png" class="mt-5 pt-5 upload" alt="upload-image">
-                <h3 class="mb-5 pb-5 pt-4  upload-text">사진을 올려 놓거나 눌러서 업로드하세요!</h3>
-            </div>
-        </div>
-        <div class="file-upload-content">
-            <img class="file-upload-image" id="face-image" src="./index.html" alt="your image">
-            <div id="loading" class="animated bounce">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
+    <main class="wrap">
+        <div class="card file-upload">
+            <div class="image-upload-wrap">
+                <input class="file-upload-input" type="file" onchange="readURL(this);" accept="image/*">
+                <div class="drag-text">
+                    <img src="./mltest_files/upload.png" class="upload" alt="upload-image">
+                    <h3 class="upload-title">얼굴 사진을 선택하세요!</h3>
+                    <span class="pick-btn">사진 선택하기</span>
+                    <p class="upload-hint">끌어다 놓거나 눌러서 업로드 • JPG, PNG 지원</p>
                 </div>
-                <p class="text-center">AI가 사진을 분석중입니다.</p>
             </div>
-            <p class="result-message"></p>
-            <div id="label-container" class="d-flex flex-column justify-content-around"></div>
-            <div class="pt-3 image-title-wrap">
-                <button type="button p-2" class="try-again-btn" onclick="gaReload()">
-                    <span class="try-again-text">다른 사진으로 재시도</span>
-                </button>
+            <div class="file-upload-content">
+                <img class="file-upload-image" id="face-image" alt="your image">
+                <div id="loading">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="text-center">AI가 사진을 분석중입니다.</p>
+                </div>
+                <div class="result-message"></div>
+                <div id="label-container" class="d-flex flex-column justify-content-around"></div>
+                <button type="button" class="try-again-btn" onclick="gaReload()">다른 사진으로 재시도</button>
             </div>
+            <p class="privacy">🔒 사진은 서버에 저장되지 않고 브라우저에서만 분석됩니다.</p>
         </div>
-    </div>
-    <footer class="footer pt-5 container d-flex justify-content-center">
-        <div>
-            <p>© 수원대학교 빅데이터분석. All Rights Reserved. </p>
-            <ul id="moreInfo" class="list-inline d-flex justify-content-center">
-                <li class="list-inline-item">
-                    <a href="https://www.youtube.com/channel/UCQNE2JmbasNYbjGAcuBiRRg" class="youtube-link">제작 도움: 조코딩 유튜브 채널</a>
-                </li>
-            </ul>
-        </div>
+    </main>
+
+    <footer class="footer wrap">
+        <p>© 수원대학교 빅데이터분석. All Rights Reserved.</p>
+        <p><a href="https://www.youtube.com/channel/UCQNE2JmbasNYbjGAcuBiRRg">제작 도움: 조코딩 유튜브 채널</a></p>
     </footer>
     <script>
         function gaReload() {
@@ -122,23 +127,21 @@
                 resultTitle = "알수없음";
                 resultExplain = "";
             }
-            var title = "<div class='" + prediction[0].className + "-animal-title'>" + resultTitle + "</div>"
-            var explain = "<div class='animal-explain pt-2'>" + resultExplain + "</div>"
-            $('.result-message').html(title + explain);
-            var barWidth;
+            var colors = ['#75cc54', '#1baeea', '#fbb03b', '#c38c66', '#31849b', '#eba6be'];
+            $('.result-message').html(
+                "<div class='result-label'>분석 결과</div>" +
+                "<div class='animal-title'>" + resultTitle + "</div>" +
+                "<div class='animal-explain'>" + resultExplain + "</div>");
             for (let i = 0; i < maxPredictions; i++) {
-                if (prediction[i].probability.toFixed(2) > 0.1) {
-                    barWidth = Math.round(prediction[i].probability.toFixed(2) * 100) + "%";
-                } else if (prediction[i].probability.toFixed(2) >= 0.01) {
-                    barWidth = "8%"
-                } else {
-                    barWidth = "4%"
-                }
-                var labelTitle = prediction[i].className;
-                var idx = Object.keys(dic_class2information).indexOf(prediction[i].className);
-                var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
-                var bar = "<div class='bar-container position-relative container'><div class='d" + idx + "-box'></div><div class='d-flex justify-content-center align-items-center d" + idx + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
-                labelContainer.childNodes[i].innerHTML = label + bar;
+                var p = prediction[i].probability;
+                var pct = Math.round(p * 100);
+                var barWidth = Math.max(pct, 6) + "%";
+                var c = colors[i % colors.length];
+                labelContainer.childNodes[i].innerHTML =
+                    "<div class='row-item' style='--c:" + c + "'>" +
+                    "<div class='animal-label'>" + prediction[i].className + "</div>" +
+                    "<div class='bar-container'><div class='bar-box'></div>" +
+                    "<div class='bar' style='width:" + barWidth + "'><span class='percent-text'>" + pct + "%</span></div></div></div>";
             }
         }
 
